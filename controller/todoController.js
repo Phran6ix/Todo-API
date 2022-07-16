@@ -1,6 +1,7 @@
 const express = require("express");
 const { findByIdAndUpdate, findByIdAndDelete } = require("../models/todoModel");
 const Todo = require("../models/todoModel");
+const sendEmail = require("../email");
 
 exports.getAllLists = async (req, res, next) => {
   try {
@@ -57,6 +58,10 @@ exports.getAList = async (req, res, next) => {
   try {
     const id = req.params.id;
     const task = await Todo.findById(id);
+
+    await sendEmail(
+      JSON.stringify(task).replace(/{|}|"/g, "").replace(/,/g, "\n")
+    );
 
     res.status(200).json({
       status: "success",
